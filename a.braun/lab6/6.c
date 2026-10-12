@@ -13,8 +13,6 @@ typedef struct Table {
 
 static int g_fd = -1;
 
-volatile sig_atomic_t timed_out = 0;
-
 void on_alarm(int signo) {
     (void)signo;
     char msg[] = "\n[timeout]\n";
