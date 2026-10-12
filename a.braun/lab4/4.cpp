@@ -69,6 +69,7 @@ int main()
     Node* prev = head;
     while (true)
     {
+        printf("%s\n" "Введите строкую Для завершения программы введите '.'");
         if (!fgets(buf, M, stdin)) break;
         if (buf[0] == '.') break;
         prev = AddNode(prev, buf);
