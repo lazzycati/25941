@@ -2,7 +2,7 @@
 #include <fcntl.h>
 #include <unistd.h> 
 #include <stdlib.h>
-#define SIZE 32
+#define SIZE 1024
 #define TSIZE 1024
 
 typedef struct Table {
@@ -59,7 +59,11 @@ int main(int argc, char **argv)
     while(1){
         int num_line = 0;
         printf("\nВведите номер строки (0 - выход): ");
-        scanf("%d", &num_line);
+        if (scanf("%d", &num_line) != 1) 
+        {
+            fprintf(stderr, "invalid input\n");
+            return 1;
+        }
         if (num_line < 0)
         {
             fprintf(stderr, "number of the line must be >= 0\n");
