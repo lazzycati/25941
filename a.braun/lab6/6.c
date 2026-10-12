@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <fcntl.h>
-#include <unistd.h> //
+#include <unistd.h> 
 #include <stdlib.h>
 #include <signal.h>
 #define SIZE 32
 #define TSIZE 1024
 
 typedef struct Table {
-    size_t offset; //off_t
+    size_t offset; 
     size_t len;
 } Table;
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     }
     int fd = open(argv[1], O_RDONLY);
     if (fd == -1)
-    {//i wiil know about this function
+    {
         perror("open");
         exit(1);
     }
@@ -90,6 +90,6 @@ int main(int argc, char **argv)
         read(fd, buf, table[num_line - 1].len);
         write(1, buf, table[num_line - 1].len);
     }
-    close(fd);//?
+    close(fd);
     return 0;
 }
