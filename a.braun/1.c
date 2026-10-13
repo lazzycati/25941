@@ -6,6 +6,25 @@
 #include <string.h>
 #include <errno.h>
 
+void usage(char* progname)
+{
+    fprintf(stderr,
+        "Использование: %s \n"
+        "Опции:\n"
+        "  -i             показать реальные и эффективные UID/GID\n"
+        "  -s             сделать процесс лидером новой группы процессов\n"
+        "  -p             показать PID, PPID и PGID\n"
+        "  -u             показать значение ulimit\n"
+        "  -U <bytes>     изменить значение ulimit\n"
+        "  -c             показать текущий размер core-файла\n"
+        "  -C <bytes>     изменить размер core-файла\n"
+        "  -d             показать текущий рабочий каталог\n"
+        "  -v             вывести все переменные окружения\n"
+        "  -V name=value  установить переменную окружения\n"
+        "  -h             показать эту справку\n"
+        "\n", progname);
+}
+
 extern char **environ;
 
 void Print_UID_GID() {
@@ -33,8 +52,8 @@ void Print_ulimit()
     struct rlimit rl;
     if (getrlimit(RLIMIT_CORE, &rl) == 0) 
     {
-        printf("ulimit soft: %u\n", (unsigned)rl.rlim_cur);
-        printf("ulimit hard: %u\n", (unsigned)rl.rlim_max);
+        printf("ulimit soft: %llu\n", (unsigned long long)rl.rlim_cur);
+        printf("ulimit hard: %llu\n", (unsigned long long)rl.rlim_max);
     } 
     else perror("getrlimit");
 }
@@ -61,7 +80,7 @@ void Change_ulimit(const char *arg)
     }
     rl.rlim_cur = val;
     if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit");
-    else printf("ulimit изменен на %u\n", (unsigned)val);
+    else printf("ulimit изменен на %llu\n", (unsigned long long)val);
 }
 
 void Print_core_size() 
@@ -69,7 +88,7 @@ void Print_core_size()
     struct rlimit rl;
     if (getrlimit(RLIMIT_CORE, &rl) == 0) 
     {
-        printf("Core file size: %u bytes\n", (unsigned)rl.rlim_cur);
+        printf("Core file size: %llu bytes\n", (unsigned long long)rl.rlim_cur);
     } 
     else perror("getrlimit");
 }
@@ -85,7 +104,7 @@ void Change_core_size(const char *arg)
     }
     rl.rlim_cur = newval;
     if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit");
-    else printf("Размер core файла изменен на %lu\n", (unsigned long)newval);
+    else printf("Размер core файла изменен на %llu\n", (unsigned long long)newval);
 }
 
 void Print_cwd() {
@@ -125,11 +144,11 @@ int main(int argc, char *argv[])
 {
     if (argc == 1) 
     {
-        printf("Программа вызвана без аргументов\n");
+        usage(argv[0]);
         return 0;
     }
     int c;
-    while ((c = getopt(argc, argv, "ispduU:cC:vV:")) != -1) {
+    while ((c = getopt(argc, argv, "ispduhU:cC:vV:")) != -1) {
         switch (c) 
         {
             case 'i': 
@@ -170,6 +189,10 @@ int main(int argc, char *argv[])
             
             case 'V': 
                 Set_env(optarg); 
+                break;
+            
+            case 'h':
+                usage(argv[0]);
                 break;
             
             case '?':
