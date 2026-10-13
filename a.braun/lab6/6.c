@@ -72,7 +72,6 @@ int main(int argc, char **argv)
         fflush(stdout);
         alarm(5);
         scanf("%d", &num_line);
-        alarm(0);
         if (num_line == 0) break;
         if (num_line < 0)
         {
