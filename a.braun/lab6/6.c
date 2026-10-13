@@ -12,6 +12,7 @@ typedef struct Table {
 } Table;
 
 static int g_fd = -1;
+int alarm_count = 0;
 
 void on_alarm(int signo) {
     (void)signo;
@@ -67,11 +68,14 @@ int main(int argc, char **argv)
     }
     while(1){
         int num_line = 0;
-        signal(SIGALRM, on_alarm);
         printf("\nВведите номер строки (0 - выход): ");
-        fflush(stdout);
-        alarm(5);
+        if (!alarm_count) {
+            signal(SIGALRM, on_alarm);
+            alarm(5);
+            alarm_count = 1;
+        }
         scanf("%d", &num_line);
+        alarm(0);
         if (num_line == 0) break;
         if (num_line < 0)
         {
