@@ -47,17 +47,31 @@ void Print_PIDs()
     printf("PGID: %d\n", getpgrp());
 }
 
+/* -u : печать лимита процессов пользователя (аналог `ulimit -u`) */
 void Print_ulimit() 
 {
     struct rlimit rl;
-    if (getrlimit(RLIMIT_CORE, &rl) == 0) 
+    if (getrlimit(RLIMIT_NPROC, &rl) == 0) 
     {
+<<<<<<< HEAD
         printf("ulimit soft: %llu\n", (unsigned long long)rl.rlim_cur);
         printf("ulimit hard: %llu\n", (unsigned long long)rl.rlim_max);
+=======
+        if (rl.rlim_cur == RLIM_INFINITY)
+            printf("ulimit soft (-u): unlimited\n");
+        else
+            printf("ulimit soft (-u): %llu\n", (unsigned long long)rl.rlim_cur);
+
+        if (rl.rlim_max == RLIM_INFINITY)
+            printf("ulimit hard (-u): unlimited\n");
+        else
+            printf("ulimit hard (-u): %llu\n", (unsigned long long)rl.rlim_max);
+>>>>>>> ad7d061 (fix option u)
     } 
-    else perror("getrlimit");
+    else perror("getrlimit(RLIMIT_NPROC)");
 }
 
+/* -U : изменить мягкий лимит процессов пользователя */
 void Change_ulimit(const char *arg) 
 {
     if (arg[0] == '-') {
@@ -73,14 +87,26 @@ void Change_ulimit(const char *arg)
         return;
     }
     struct rlimit rl;
-    if (getrlimit(RLIMIT_CORE, &rl) == -1) 
+    if (getrlimit(RLIMIT_NPROC, &rl) == -1) 
     {
-        perror("getrlimit");
+        perror("getrlimit(RLIMIT_NPROC)");
         return;
     }
+<<<<<<< HEAD
     rl.rlim_cur = val;
     if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit");
     else printf("ulimit изменен на %llu\n", (unsigned long long)val);
+=======
+    if (rl.rlim_max != RLIM_INFINITY && (rlim_t)val > rl.rlim_max) 
+    {
+        fprintf(stderr, "Значение %llu превышает hard limit %llu\n",
+                val, (unsigned long long)rl.rlim_max);
+        return;
+    }
+    rl.rlim_cur = (rlim_t)val;
+    if (setrlimit(RLIMIT_NPROC, &rl) == -1) perror("setrlimit(RLIMIT_NPROC)");
+    else printf("ulimit (-u) изменен на %llu\n", val);
+>>>>>>> ad7d061 (fix option u)
 }
 
 void Print_core_size() 
@@ -88,23 +114,57 @@ void Print_core_size()
     struct rlimit rl;
     if (getrlimit(RLIMIT_CORE, &rl) == 0) 
     {
+<<<<<<< HEAD
         printf("Core file size: %llu bytes\n", (unsigned long long)rl.rlim_cur);
+=======
+        if (rl.rlim_cur == RLIM_INFINITY)
+            printf("Core file size: unlimited\n");
+        else
+            printf("Core file size: %llu bytes\n", (unsigned long long)rl.rlim_cur);
+>>>>>>> ad7d061 (fix option u)
     } 
-    else perror("getrlimit");
+    else perror("getrlimit(RLIMIT_CORE)");
 }
 
 void Change_core_size(const char *arg) 
 {
-    rlim_t newval = (rlim_t)atol(arg);
     struct rlimit rl;
     if (getrlimit(RLIMIT_CORE, &rl) == -1) 
     {
-        perror("getrlimit");
+        perror("getrlimit(RLIMIT_CORE)");
         return;
     }
+
+    rlim_t newval;
+    if (strcmp(arg, "unlimited") == 0) 
+    {
+        newval = RLIM_INFINITY;
+    } 
+    else 
+    {
+        char *end;
+        errno = 0;
+        unsigned long long v = strtoull(arg, &end, 10);
+        if (errno != 0 || *end != '\0' || end == arg) 
+        {
+            fprintf(stderr, "Некорректное значение для -C: '%s'\n", arg);
+            return;
+        }
+        newval = (rlim_t)v;
+    }
+
     rl.rlim_cur = newval;
+<<<<<<< HEAD
     if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit");
     else printf("Размер core файла изменен на %llu\n", (unsigned long long)newval);
+=======
+    if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit(RLIMIT_CORE)");
+    else 
+    {
+        if (newval == RLIM_INFINITY) printf("Размер core файла изменен на unlimited\n");
+        else printf("Размер core файла изменен на %llu\n", (unsigned long long)newval);
+    }
+>>>>>>> ad7d061 (fix option u)
 }
 
 void Print_cwd() {
