@@ -74,18 +74,25 @@ int main(int argc, char **argv)
             alarm(5);
             alarm_count = 1;
         }
-        scanf("%d", &num_line);
+        int rc = scanf("%d", &num_line);
         alarm(0);
+        if (rc != 1)
+        {
+            fprintf(stderr, "invalid input\n");
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) ; 
+            continue;
+        }
         if (num_line == 0) break;
         if (num_line < 0)
         {
             fprintf(stderr, "number of the line must be >= 0\n");
-            return 1;
+            continue;
         }
         if (num_line >= count_line)
         {
             fprintf(stderr, "there is no such line\n");
-            return 1;
+            continue;
         }
         lseek(fd, table[num_line - 1].offset, SEEK_SET);
         read(fd, buf, table[num_line - 1].len);
