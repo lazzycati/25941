@@ -31,7 +31,7 @@ void Print_PIDs()
 void Print_ulimit() 
 {
     struct rlimit rl;
-    if (getrlimit(RLIMIT_CORE, &rl) == 0) 
+    if (getrlimit(RLIMIT_NPROC, &rl) == 0) 
     {
         printf("ulimit soft: %u\n", (unsigned)rl.rlim_cur);
         printf("ulimit hard: %u\n", (unsigned)rl.rlim_max);
@@ -54,13 +54,13 @@ void Change_ulimit(const char *arg)
         return;
     }
     struct rlimit rl;
-    if (getrlimit(RLIMIT_CORE, &rl) == -1) 
+    if (getrlimit(RLIMIT_NPROC, &rl) == -1) 
     {
         perror("getrlimit");
         return;
     }
     rl.rlim_cur = val;
-    if (setrlimit(RLIMIT_CORE, &rl) == -1) perror("setrlimit");
+    if (setrlimit(RLIMIT_NPROC, &rl) == -1) perror("setrlimit");
     else printf("ulimit изменен на %u\n", (unsigned)val);
 }
 
