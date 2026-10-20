@@ -56,23 +56,26 @@ int main(int argc, char **argv)
     {
         printf("%-6zu %-10zu %-10zu\n", i + 1, table[i].offset, table[i].len);
     }
-    while(1){
+    while(1)
+    {
         int num_line = 0;
         printf("\nВведите номер строки (0 - выход): ");
         if (scanf("%d", &num_line) != 1) 
         {
             fprintf(stderr, "invalid input\n");
-            return 1;
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) ; 
+            continue;
         }
         if (num_line < 0)
         {
             fprintf(stderr, "number of the line must be >= 0\n");
-            return 1;
+            continue;
         }
         if (num_line > count_line)
         {
             fprintf(stderr, "there is no such line\n");
-            return 1;
+            continue;
         }
         if (num_line == 0) break;
         lseek(fd, table[num_line - 1].offset, SEEK_SET);
