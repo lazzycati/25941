@@ -78,8 +78,7 @@ void Change_ulimit(const char *arg)
     }
     char cmd[128];
     snprintf(cmd, sizeof(cmd),
-    "prctl -n process.max-procs -t privileged -s -v %llu -p %llu -i process %llu 2>&1",
-    val, (unsigned long long)getpid(), (unsigned long long)getpid());
+    "prctl -n process.max-procs -v %ld -t privileged $$ 2>&1", val);
     FILE *f = popen(cmd, "r");
     if (f) 
     {
