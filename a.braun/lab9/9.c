@@ -25,7 +25,7 @@ int main()
             perror("waitpid failed");
             exit(1);
         }
-        printf("Родитель завершился.\n");
+        printf("\nРодитель завершился.\n");
     }
     return 0;
 }
